@@ -1,0 +1,111 @@
+name: Build StreakUp IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 16
+        run: |
+          # List available Xcodes and pick 16.x
+          ls /Applications/ | grep -i xcode
+          if [ -d "/Applications/Xcode_16.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_16.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.1.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+          else
+            # Fall back to whatever Xcode is available
+            XCODE_APP=$(ls /Applications/ | grep "Xcode_" | sort -V | tail -1)
+            if [ -n "$XCODE_APP" ]; then
+              sudo xcode-select -s "/Applications/$XCODE_APP/Contents/Developer"
+            fi
+          fi
+          xcodebuild -version
+          xcrun --version
+
+      - name: Show project info
+        run: |
+          xcodebuild -list -project StreakUp.xcodeproj || true
+
+      - name: Build archive (ad-hoc, no signing)
+        run: |
+          set -e
+          xcodebuild archive \
+            -project StreakUp.xcodeproj \
+            -scheme StreakUp \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/StreakUp.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            | xcpretty || xcodebuild archive \
+            -project StreakUp.xcodeproj \
+            -scheme StreakUp \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/StreakUp.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO
+
+          ls -la "$RUNNER_TEMP/StreakUp.xcarchive/" || true
+
+      - name: Create IPA from archive (manual packaging for unsigned build)
+        run: |
+          set -e
+          ARCHIVE="$RUNNER_TEMP/StreakUp.xcarchive"
+          PAYLOAD_DIR="$RUNNER_TEMP/Payload"
+          IPA_DIR="$RUNNER_TEMP/ipa"
+
+          mkdir -p "$PAYLOAD_DIR" "$IPA_DIR"
+
+          # Try xcodebuild export first (may fail without certs — that's ok)
+          if xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE" \
+            -exportPath "$IPA_DIR" \
+            -exportOptionsPlist ExportOptions.plist 2>&1; then
+            echo "Export via xcodebuild succeeded"
+            ls -la "$IPA_DIR"
+          else
+            echo "xcodebuild export failed (expected without signing certs) — packaging IPA manually"
+            # Manual IPA: copy .app into Payload and zip
+            APP_PATH=$(find "$ARCHIVE" -name "*.app" -maxdepth 4 | head -1)
+            echo "Found app at: $APP_PATH"
+            if [ -z "$APP_PATH" ]; then
+              echo "ERROR: No .app found in archive"
+              find "$ARCHIVE" -type f | head -20
+              exit 1
+            fi
+            cp -R "$APP_PATH" "$PAYLOAD_DIR/"
+            # Ensure Swift libs etc are present — archive already contains them
+            cd "$RUNNER_TEMP"
+            zip -r "$IPA_DIR/StreakUp.ipa" Payload
+            ls -la "$IPA_DIR"
+          fi
+
+          # Ensure we have an IPA at a known path
+          if [ ! -f "$IPA_DIR/StreakUp.ipa" ]; then
+            # Alternative: IPA may be named differently
+            FOUND_IPA=$(find "$IPA_DIR" -name "*.ipa" | head -1)
+            if [ -n "$FOUND_IPA" ]; then
+              cp "$FOUND_IPA" "$IPA_DIR/StreakUp.ipa"
+            fi
+          fi
+
+          ls -lh "$IPA_DIR/StreakUp.ipa" || (echo "No IPA produced"; find "$RUNNER_TEMP" -name "*.ipa" 2>/dev/null; exit 1)
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: StreakUp-ipa
+          path: ${{ runner.temp }}/ipa/StreakUp.ipa
+          if-no-files-found: error
+          retention-days: 30
