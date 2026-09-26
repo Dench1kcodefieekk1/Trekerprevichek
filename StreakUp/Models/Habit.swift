@@ -10,6 +10,8 @@ final class Habit {
     var emoji: String
     var colorHex: String
     var createdAt: Date
+    /// Optional daily reminder time (local time). Nil = no reminder.
+    var reminderTime: Date?
 
     @Relationship(deleteRule: .cascade, inverse: \HabitCompletion.habit)
     var completions: [HabitCompletion]
@@ -20,6 +22,7 @@ final class Habit {
         emoji: String,
         colorHex: String,
         createdAt: Date = Date(),
+        reminderTime: Date? = nil,
         completions: [HabitCompletion] = []
     ) {
         self.id = id
@@ -27,6 +30,7 @@ final class Habit {
         self.emoji = emoji
         self.colorHex = colorHex
         self.createdAt = createdAt
+        self.reminderTime = reminderTime
         self.completions = completions
     }
 
@@ -38,6 +42,11 @@ final class Habit {
 
     var lightBackgroundColor: Color {
         color.opacity(0.15)
+    }
+
+    /// Lighter tint for gradient end
+    var lightColor: Color {
+        color.opacity(0.55)
     }
 
     // MARK: - Date Helpers
@@ -62,9 +71,6 @@ final class Habit {
         let today = startOfDay(Date())
         var streak = 0
         var cursor = today
-
-        // If not completed today, streak is 0
-        // Some designs count from yesterday if today not done, but spec says backwards from today.
         while completionDays.contains(cursor) {
             streak += 1
             guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
@@ -76,10 +82,8 @@ final class Habit {
     var longestStreak: Int {
         let sortedDays = completionDays.sorted()
         guard !sortedDays.isEmpty else { return 0 }
-
         var maxStreak = 1
         var current = 1
-
         for i in 1..<sortedDays.count {
             let prev = sortedDays[i - 1]
             let curr = sortedDays[i]
@@ -94,9 +98,7 @@ final class Habit {
         return maxStreak
     }
 
-    var totalCompletions: Int {
-        completions.count
-    }
+    var totalCompletions: Int { completions.count }
 
     // MARK: - Helpers
 
@@ -124,26 +126,31 @@ extension Color {
         Scanner(string: hex).scanHexInt64(&int)
         let a, r, g, b: UInt64
         switch hex.count {
-        case 3:
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
+        case 3: (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default: (a, r, g, b) = (255, 0, 0, 0)
         }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: Double(a) / 255
-        )
+        self.init(.sRGB, red: Double(r)/255, green: Double(g)/255, blue: Double(b)/255, opacity: Double(a)/255)
     }
+    func toHex() -> String { "#000000" }
+}
 
-    func toHex() -> String {
-        // Fallback — not used for persistence, just utility
-        return "#000000"
+// MARK: - Milestones
+
+enum Milestone: Int, CaseIterable {
+    case three = 3, seven = 7, fourteen = 14, thirty = 30, hundred = 100
+    var emoji: String {
+        switch self {
+        case .three: return "\u{1F331}" // 🌱
+        case .seven: return "\u{1F525}" // 🔥
+        case .fourteen: return "\u{26A1}" // ⚡
+        case .thirty: return "\u{1F3C6}" // 🏆
+        case .hundred: return "\u{1F451}" // 👑
+        }
+    }
+    var title: String { "\(rawValue) Day Streak!" }
+    static func milestone(for streak: Int) -> Milestone? {
+        Milestone(rawValue: streak)
     }
 }

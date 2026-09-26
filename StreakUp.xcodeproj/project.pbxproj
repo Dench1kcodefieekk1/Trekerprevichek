@@ -18,6 +18,12 @@
 		A10000000000000000000009 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* ProgressRingView.swift */; };
 		A10000000000000000000010 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* SpeechRecognizer.swift */; };
 		A10000000000000000000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* Assets.xcassets */; };
+		A10000000000000000000013 /* LiquidGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* LiquidGlass.swift */; };
+		A10000000000000000000014 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* NotificationManager.swift */; };
+		A10000000000000000000015 /* FloatingTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* FloatingTabBar.swift */; };
+		A10000000000000000000016 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* ConfettiView.swift */; };
+		A10000000000000000000017 /* CompletionCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* CompletionCalendarView.swift */; };
+		A10000000000000000000018 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* TypewriterText.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +39,12 @@
 		B10000000000000000000010 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		B10000000000000000000011 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000000000000000000013 /* LiquidGlass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlass.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		B10000000000000000000015 /* FloatingTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingTabBar.swift; sourceTree = "<group>"; };
+		B10000000000000000000016 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
+		B10000000000000000000017 /* CompletionCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionCalendarView.swift; sourceTree = "<group>"; };
+		B10000000000000000000018 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +75,8 @@
 				F10000000000000000000001 /* Models */,
 				F10000000000000000000002 /* Views */,
 				F10000000000000000000003 /* ViewModels */,
+				F10000000000000000000004 /* DesignSystem */,
+				F10000000000000000000005 /* Managers */,
 				B10000000000000000000011 /* Assets.xcassets */,
 			);
 			path = StreakUp;
@@ -85,6 +99,10 @@
 				B10000000000000000000007 /* AddHabitSheet.swift */,
 				B10000000000000000000008 /* StatsView.swift */,
 				B10000000000000000000009 /* ProgressRingView.swift */,
+				B10000000000000000000015 /* FloatingTabBar.swift */,
+				B10000000000000000000016 /* ConfettiView.swift */,
+				B10000000000000000000017 /* CompletionCalendarView.swift */,
+				B10000000000000000000018 /* TypewriterText.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -95,6 +113,22 @@
 				B10000000000000000000010 /* SpeechRecognizer.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F10000000000000000000004 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000013 /* LiquidGlass.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		F10000000000000000000005 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000014 /* NotificationManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		E10000000000000000000002 /* Products */ = {
@@ -184,6 +218,12 @@
 				A10000000000000000000008 /* StatsView.swift in Sources */,
 				A10000000000000000000009 /* ProgressRingView.swift in Sources */,
 				A10000000000000000000010 /* SpeechRecognizer.swift in Sources */,
+				A10000000000000000000013 /* LiquidGlass.swift in Sources */,
+				A10000000000000000000014 /* NotificationManager.swift in Sources */,
+				A10000000000000000000015 /* FloatingTabBar.swift in Sources */,
+				A10000000000000000000016 /* ConfettiView.swift in Sources */,
+				A10000000000000000000017 /* CompletionCalendarView.swift in Sources */,
+				A10000000000000000000018 /* TypewriterText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,8 +377,8 @@
 		O10000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -363,7 +403,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
