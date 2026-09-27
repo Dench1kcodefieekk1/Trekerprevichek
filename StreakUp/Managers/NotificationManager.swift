@@ -1,6 +1,6 @@
 // FILE: StreakUp/Managers/NotificationManager.swift
 import Foundation
-import UserNotifications
+@preconcurrency import UserNotifications
 
 @MainActor
 final class NotificationManager: ObservableObject {
@@ -21,8 +21,12 @@ final class NotificationManager: ObservableObject {
     }
 
     func checkAuthorization() async {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        isAuthorized = settings.authorizationStatus == .authorized
+        let status = await withCheckedContinuation { (continuation: CheckedContinuation<UNAuthorizationStatus, Never>) in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                continuation.resume(returning: settings.authorizationStatus)
+            }
+        }
+        isAuthorized = status == .authorized
     }
 
     func scheduleDailyReminder(for habit: Habit, at time: Date) {

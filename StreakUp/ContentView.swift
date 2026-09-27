@@ -42,16 +42,29 @@ struct ContentView: View {
         .ignoresSafeArea(.keyboard)
     }
 
-    // MARK: - iPad (NavigationSplitView sidebar)
+    // MARK: - iPad (NavigationSplitView sidebar) - List(selection:) is macOS-only, use plain List
 
     private var iPadLayout: some View {
         NavigationSplitView {
-            List(selection: $selectedTab) {
+            List {
                 ForEach(AppTab.allCases, id: \.self) { tab in
-                    NavigationLink(value: tab) {
-                        Label(tab.rawValue, systemImage: selectedTab == tab ? tab.icon : tab.outlineIcon)
-                            .font(.system(size: 15, weight: .semibold))
+                    Button {
+                        withAnimation(Glass.spring) { selectedTab = tab }
+                    } label: {
+                        HStack {
+                            Label(tab.rawValue, systemImage: selectedTab == tab ? tab.icon : tab.outlineIcon)
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(selectedTab == tab ? Accent.purple : .primary)
+                            Spacer()
+                            if selectedTab == tab {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Accent.purple)
+                            }
+                        }
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                     .listRowBackground(selectedTab == tab ? Accent.purple.opacity(0.14) : Color.clear)
                 }
             }
